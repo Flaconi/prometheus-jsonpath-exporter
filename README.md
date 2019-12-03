@@ -13,6 +13,19 @@ json_data_urls
     app: kong_cluster_1
     env: developement
     kind: kong_cluster # All metrics defined in kind "kong_cluster" will be executed on this endpoint
+  - url: http://stubonweb.herokuapp.com/ 
+    app: kong_cluster_1
+    env: production
+    kind: kong_cluster 
+  - url: http://stubonweb.herokuapp.com/ 
+    app: kong_cluster_2
+    env: developement
+    kind: kong_cluster 
+  - url: http://stubonweb.herokuapp.com/ 
+    app: kong_cluster_2
+    env: production
+    kind: kong_cluster 
+
 
 metrics:
   - kind: kong_cluster
@@ -81,13 +94,20 @@ Metrics will available in http://localhost:9158
 $ curl -s localhost:9158 | grep -v ^#
 kong_cluster_total_nodes{app="kong_cluster_1",environment="developement",kind="kong_cluster"} 3.0
 kong_cluster_alive_nodes{app="kong_cluster_1",environment="developement",kind="kong_cluster"} 2.0
+kong_cluster_total_nodes{app="kong_cluster_1",environment="production",kind="kong_cluster"} 3.0
+kong_cluster_alive_nodes{app="kong_cluster_1",environment="production",kind="kong_cluster"} 2.0
+kong_cluster_total_nodes{app="kong_cluster_2",environment="developement",kind="kong_cluster"} 3.0
+kong_cluster_alive_nodes{app="kong_cluster_2",environment="developement",kind="kong_cluster"} 2.0
+kong_cluster_total_nodes{app="kong_cluster_2",environment="production",kind="kong_cluster"} 3.0
+kong_cluster_alive_nodes{app="kong_cluster_2",environment="production",kind="kong_cluster"} 2.0
 python_info{implementation="CPython",major="2",minor="7",patchlevel="13",version="2.7.13"} 1.0
-process_virtual_memory_bytes 1.06336256e+08
-process_resident_memory_bytes 4.2012672e+07
-process_start_time_seconds 1.57537248695e+09
-process_cpu_seconds_total 0.26
+process_virtual_memory_bytes 1.06340352e+08
+process_resident_memory_bytes 4.2151936e+07
+process_start_time_seconds 1.57537571808e+09
+process_cpu_seconds_total 0.41000000000000003
 process_open_fds 7.0
 process_max_fds 1.048576e+06
+
 
 ```
 
