@@ -6,6 +6,18 @@ json_data_urls:
     app: kong_cluster_1
     env: developement
     kind: kong_cluster # All metrics defined in kind "kong_cluster" will be executed for this endpoint
+  - url: http://stubonweb.herokuapp.com/
+    app: kong_cluster_1
+    env: production
+    kind: kong_cluster
+  - url: http://stubonweb.herokuapp.com/
+    app: kong_cluster_2
+    env: developement
+    kind: kong_cluster
+  - url: http://stubonweb.herokuapp.com/
+    app: kong_cluster_2
+    env: production
+    kind: kong_cluster
 
 metrics:
   - kind: kong_cluster
