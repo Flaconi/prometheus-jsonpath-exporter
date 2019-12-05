@@ -19,16 +19,22 @@ class JsonPathCollector(object):
 
   def collect(self):
     config = self._config
-    result = json.loads(urllib2.urlopen(config['json_data_url'], timeout=10).read())
-    result_tree = Tree(result)
-    for metric_config in config['metrics']:
-      metric_name = "{}_{}".format(config['metric_name_prefix'], metric_config['name'])
-      metric_description = metric_config.get('description', '')
-      metric_path = metric_config['path']
-      value = result_tree.execute(metric_path)
-      logging.debug("metric_name: {}, value for '{}' : {}".format(metric_name, metric_path, value))
-      metric = GaugeMetricFamily(metric_name, metric_description, value=value)
-      yield metric
+    endpoints = config['json_data_urls']
+    for endpoint in endpoints:
+      base_url = endpoint['url']
+      for metric_config in config['metrics']:
+        if endpoint['kind'] == metric_config['kind']:
+          for mymetric in metric_config['metric']:
+            result = json.loads(urllib2.urlopen('{}{}'.format(base_url, metric_config['jsonpath']), timeout=10).read())
+            result_tree = Tree(result)
+            metric_name = "{}_{}".format(metric_config['prefix'], mymetric['name'])
+            metric_description = mymetric.get('description', '')
+            metric_path = mymetric['path']
+            value = result_tree.execute(metric_path)
+            logging.debug("metric_name: {}, value for '{}' : {}".format(metric_name, metric_path, value))
+            metric = GaugeMetricFamily(metric_name, metric_description, labels=["environment","app","kind"])
+            metric.add_metric([endpoint['env'], endpoint['app'], endpoint['kind']] , value=str(value))
+            yield metric
 
 
 if __name__ == "__main__":
@@ -36,7 +42,7 @@ if __name__ == "__main__":
   parser.add_argument('config_file_path', help='Path of the config file')
   args = parser.parse_args()
   with open(args.config_file_path) as config_file:
-    config = yaml.load(config_file)
+    config = yaml.load(config_file, Loader=yaml.FullLoader)
     log_level = config.get('log_level', DEFAULT_LOG_LEVEL)
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.getLevelName(log_level.upper()))
     exporter_port = config.get('exporter_port', DEFAULT_PORT)
